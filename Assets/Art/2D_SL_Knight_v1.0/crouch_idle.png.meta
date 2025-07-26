@@ -58,7 +58,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -72,7 +72,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 32
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -96,7 +96,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -137,10 +137,10 @@ TextureImporter:
       name: crouch_idle_0
       rect:
         serializedVersion: 2
-        x: 36
-        y: 191
-        width: 42
-        height: 40
+        x: 0
+        y: 192
+        width: 128
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -159,10 +159,10 @@ TextureImporter:
       name: crouch_idle_1
       rect:
         serializedVersion: 2
-        x: 164
-        y: 191
-        width: 42
-        height: 40
+        x: 128
+        y: 192
+        width: 128
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -181,10 +181,10 @@ TextureImporter:
       name: crouch_idle_2
       rect:
         serializedVersion: 2
-        x: 36
-        y: 127
-        width: 41
-        height: 40
+        x: 0
+        y: 128
+        width: 128
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -203,10 +203,10 @@ TextureImporter:
       name: crouch_idle_3
       rect:
         serializedVersion: 2
-        x: 164
-        y: 127
-        width: 41
-        height: 39
+        x: 128
+        y: 128
+        width: 128
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -225,10 +225,10 @@ TextureImporter:
       name: crouch_idle_4
       rect:
         serializedVersion: 2
-        x: 36
-        y: 63
-        width: 41
-        height: 39
+        x: 0
+        y: 64
+        width: 128
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -247,10 +247,10 @@ TextureImporter:
       name: crouch_idle_5
       rect:
         serializedVersion: 2
-        x: 164
-        y: 63
-        width: 41
-        height: 39
+        x: 128
+        y: 64
+        width: 128
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -269,10 +269,10 @@ TextureImporter:
       name: crouch_idle_6
       rect:
         serializedVersion: 2
-        x: 36
+        x: 0
         y: 0
-        width: 42
-        height: 39
+        width: 128
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -291,10 +291,10 @@ TextureImporter:
       name: crouch_idle_7
       rect:
         serializedVersion: 2
-        x: 164
+        x: 128
         y: 0
-        width: 42
-        height: 39
+        width: 128
+        height: 64
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -313,7 +313,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: d2bfbad0f37b45418b528e94b5e0f059
     internalID: 0
     vertices: []
     indices: 
@@ -321,7 +321,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":128.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       crouch_idle_0: 9159447272655079304
       crouch_idle_1: -6061327372344356730
