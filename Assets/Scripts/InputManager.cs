@@ -138,6 +138,11 @@ public class InputManager : MonoBehaviour
         return result;
     }
 
+    public bool GetCrouchHeld()
+    {
+        return crouchPressed;
+    }
+
     public bool GetRollPressed()
     {
         bool result = rollPressed;

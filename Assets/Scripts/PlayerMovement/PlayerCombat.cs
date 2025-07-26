@@ -23,6 +23,7 @@ public class PlayerCombat : MonoBehaviour
     public float attackRate = 2f;
     private float nextAttackTime = 0f;
     public int maxCombo = 4;
+    public int maxComboCrouch = 2;
     private int currentCombo = 0;
     private float comboTimer = 0f;
     public float comboMaxDelay = 0.7f;
@@ -71,29 +72,69 @@ public class PlayerCombat : MonoBehaviour
         {
             if (!PlayerController.IsJumping)
             {
-                if (Time.time >= nextAttackTime)
+                if (!PlayerController.IsCrouching)
                 {
-                    if (comboTimer > comboMaxDelay)
+                    if (Time.time >= nextAttackTime)
                     {
-                        currentCombo = 0;
+                        if (currentStamina < 5)
+                        {
+                            Debug.Log("Not enough stamina for attack!");
+                            return;
+                        }
+                        currentStamina -= 5;
+
+                        if (comboTimer > comboMaxDelay)
+                        {
+                            currentCombo = 0;
+                        }
+
+                        currentCombo++;
+                        if (currentCombo > maxCombo)
+                            currentCombo = 1;
+
+                        animator.SetTrigger("Attack" + currentCombo);
+                        nextAttackTime = Time.time + 1f / attackRate;
+                        comboTimer = 0f;
                     }
+                }
+                else
+                {
+                    if (Time.time >= nextAttackTime)
+                    {
+                        if (currentStamina < 2)
+                        {
+                            Debug.Log("Not enough stamina for crouch attack!");
+                            return;
+                        }
 
-                    currentCombo++;
-                    if (currentCombo > maxCombo)
-                        currentCombo = 1;
+                        if (comboTimer > comboMaxDelay)
+                        {
+                            currentCombo = 0;
+                        }
 
-                    Attack(currentCombo);
-                    nextAttackTime = Time.time + 1f / attackRate;
-                    comboTimer = 0f;
+                        currentCombo++;
+                        if (currentCombo > maxComboCrouch)
+                            currentCombo = 1;
+                        currentStamina -= 2;
+                        nextAttackTime = Time.time + 1f / attackRate;
+                        comboTimer = 0f;
+                        animator.SetTrigger("CrouchAttack" + currentCombo);
+                    }
                 }
             }
             else
             {
                 if (Time.time >= nextAttackTime)
                 {
-                    JumpAttack();
+                    if (currentStamina < 20)
+                    {
+                        Debug.Log("Not enough stamina for jump attack!");
+                        return;
+                    }
+                    currentStamina -= 20;
                     nextAttackTime = Time.time + 1f / attackRate;
                     comboTimer = 0f;
+                    PlayerController.DoJumpAttackFall();
                 }
             }
         }
@@ -110,22 +151,15 @@ public class PlayerCombat : MonoBehaviour
 
         if (currentStamina <= maxStamina && regenTimeStamina >= 1f)
         {
-            currentStamina++;
+            currentStamina += 5;
             regenTimeStamina = 0f;
             if (currentStamina > maxStamina)
                 currentStamina = maxStamina;
         }
     }
 
-    private void Attack(int comboStep)
+    private void Attack()
     {
-        if (currentStamina < 5)
-        {
-            Debug.Log("Not enough stamina for attack!");
-            return;
-        }
-        currentStamina -= 5;
-        animator.SetTrigger("Attack" + comboStep);
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(attackPoint.position, attackRange, enemyLayers);
         if (attackSound != null)
         {
@@ -139,15 +173,6 @@ public class PlayerCombat : MonoBehaviour
 
     private void JumpAttack()
     {
-        if (currentStamina < 20)
-        {
-            Debug.Log("Not enough stamina for jump attack!");
-            return;
-        }
-        currentStamina -= 20;
-        animator.SetTrigger("jumpAttack");
-        PlayerController.DoJumpAttackFall();
-
         Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(jumpAttackPoint.position, jumpAttackRange, enemyLayers);
         if (attackSound != null)
         {

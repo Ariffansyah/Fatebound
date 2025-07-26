@@ -2144,7 +2144,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &327518260
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11889,6 +11889,7 @@ MonoBehaviour:
   deceleration: 40
   maxRolls: 3
   jumpSound: {fileID: 8300000, guid: 7ed26d3ac9296a348a8cedb6eca72cf5, type: 3}
+  attackPoint: {fileID: 846892055}
   jumpAttackGravityScale: 8
   pauseMenu: {fileID: 504633067}
 --- !u!114 &1238068116
@@ -11917,6 +11918,7 @@ MonoBehaviour:
   maxStamina: 100
   attackRate: 2
   maxCombo: 4
+  maxComboCrouch: 2
   comboMaxDelay: 0.7
   attackSound: {fileID: 8300000, guid: 9c769aff2da01a52eb0a4c4cca8358c0, type: 3}
   hurtSound: {fileID: 8300000, guid: 4db9b1dda3be9cfa28214c80a47c212a, type: 3}

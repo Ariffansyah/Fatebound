@@ -17,6 +17,9 @@ public class PlayerController : MonoBehaviour
     [Header("Sound Effects")]
     public AudioClip jumpSound;
 
+    [Header("Combat Params")]
+    public Transform attackPoint;
+
     private BoxCollider2D coll;
     private Rigidbody2D rb;
     private Animator animator;
@@ -39,7 +42,17 @@ public class PlayerController : MonoBehaviour
     public float RollTimer => rollTimer;
 
     private bool isJumpAttacking = false;
-    public float jumpAttackGravityScale = 8.0f;
+    public float jumpAttackGravityScale = 6.0f;
+
+    private bool isCrouching = false;
+    public bool IsCrouching => isCrouching;
+    private bool lastCrouchInput = false;
+    private Vector2 originalColliderSize;
+    private Vector2 originalColliderOffset;
+    private Vector2 crouchColliderSize;
+    private Vector2 crouchColliderOffset;
+    private Vector2 originalAttackPointPos;
+    private Vector2 crouchAttackPointPos;
 
     [SerializeField] private PauseMenu pauseMenu;
 
@@ -56,6 +69,13 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         audioSource = GetComponent<AudioSource>();
+
+        originalColliderSize = coll.size;
+        originalColliderOffset = coll.offset;
+        crouchColliderSize = new Vector2(coll.size.x, coll.size.y * 0.75f);
+        crouchColliderOffset = originalColliderOffset + new Vector2(0, -(coll.size.y - crouchColliderSize.y) * 0.5f);
+        originalAttackPointPos = attackPoint.localPosition;
+        crouchAttackPointPos = new Vector2(attackPoint.localPosition.x, attackPoint.localPosition.y - 0.2f);
 
         currentRolls = maxRolls;
 
@@ -82,7 +102,10 @@ public class PlayerController : MonoBehaviour
             animatorStateInfo.IsName("Attack2") ||
             animatorStateInfo.IsName("Attack3") ||
             animatorStateInfo.IsName("Attack4") ||
-            animatorStateInfo.IsName("Hurt"))
+            animatorStateInfo.IsName("CrouchAttack") ||
+            animatorStateInfo.IsName("CrouchAttack2") ||
+            animatorStateInfo.IsName("Hurt") ||
+            animatorStateInfo.IsName("jumpAttack"))
         {
             moveDirection = Vector2.zero;
             isRolling = false;
@@ -119,6 +142,8 @@ public class PlayerController : MonoBehaviour
         UpdateIsGrounded();
 
         HandleHorizontalMovement();
+
+        HandleCrouching();
 
         HandleJumping();
 
@@ -158,6 +183,8 @@ public class PlayerController : MonoBehaviour
 
     private void HandleHorizontalMovement()
     {
+        if (isJumpAttacking) return;
+        if (isCrouching) return;
         float targetSpeed = moveDirection.x * runSpeed;
         float speedDiff = targetSpeed - rb.linearVelocity.x;
         float accelRate = Mathf.Abs(targetSpeed) > 0.01f ? acceleration : deceleration;
@@ -166,8 +193,37 @@ public class PlayerController : MonoBehaviour
         rb.linearVelocity = new Vector2(rb.linearVelocity.x + movement, rb.linearVelocity.y);
     }
 
+    private void HandleCrouching()
+    {
+        bool crouchInput = InputManager.GetInstance().GetCrouchHeld();
+
+        if (crouchInput != lastCrouchInput)
+        {
+            animator.SetBool("isCrouching", crouchInput);
+            isCrouching = crouchInput;
+            lastCrouchInput = crouchInput;
+
+            if (crouchInput)
+            {
+                coll.size = crouchColliderSize;
+                coll.offset = crouchColliderOffset;
+                attackPoint.localPosition = crouchAttackPointPos;
+            }
+            else
+            {
+                coll.size = originalColliderSize;
+                coll.offset = originalColliderOffset;
+                attackPoint.localPosition = originalAttackPointPos;
+            }
+        }
+    }
+
     private void HandleJumping()
     {
+        if (isJumpAttacking || isCrouching || !isGrounded)
+        {
+            return;
+        }
         bool jumpPressed = InputManager.GetInstance().GetJumpPressed();
 
         if (isGrounded && jumpPressed)
