@@ -6,7 +6,7 @@ public class PlayerController : MonoBehaviour
 {
     [Header("Movement Params")]
     public float runSpeed = 6.0f;
-    public float jumpForce = 10.0f;
+    public float jumpForce = 15.0f;
     public float gravityScale = 3.0f;
     public float acceleration = 30.0f;
     public float deceleration = 40.0f;
@@ -33,6 +33,7 @@ public class PlayerController : MonoBehaviour
     private float rollTimer = 0f;
     private bool isRollingInvulnerable = false;
     private bool isRollingInProgress = false;
+    private bool doubleJumped = false;
 
     public bool IsJumping => !isGrounded;
     public bool IsRollingInvulnerable => isRollingInvulnerable;
@@ -94,6 +95,7 @@ public class PlayerController : MonoBehaviour
         {
             isRollingInvulnerable = false;
         }
+
 
         isRollingInProgress = animator.GetCurrentAnimatorStateInfo(0).IsName("Rolling");
 
@@ -220,10 +222,16 @@ public class PlayerController : MonoBehaviour
 
     private void HandleJumping()
     {
-        if (isJumpAttacking || isCrouching || !isGrounded)
+        if (isGrounded)
+        {
+            doubleJumped = false;
+        }
+
+        if (isJumpAttacking || isCrouching)
         {
             return;
         }
+
         bool jumpPressed = InputManager.GetInstance().GetJumpPressed();
 
         if (isGrounded && jumpPressed)
@@ -234,6 +242,16 @@ public class PlayerController : MonoBehaviour
             }
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
             isGrounded = false;
+            doubleJumped = false;
+        }
+        else if (!doubleJumped && !isGrounded && jumpPressed)
+        {
+            if (jumpSound != null)
+            {
+                audioSource.PlayOneShot(jumpSound);
+            }
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce * 0.8f);
+            doubleJumped = true;
         }
     }
 

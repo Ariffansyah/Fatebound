@@ -3,10 +3,15 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     [Header("Enemy Params")]
-    public int maxHealth = 100;
-    public int attackDamage = 40;
-    public float attackRate = 1.5f;
-    public float attackRange = 0.5f;
+    public int maxHealth = 2500;
+    public int attackDamage = 45;
+    public float attackRate = 1.2f;
+    public float attackRange = 2.5f;
+    public float dashAttackRange = 3.5f;
+    public bool isFlipped = false;
+    public Transform[] attackPoint;
+    public Transform dashAttackPoint;
+    public LayerMask playerLayers;
 
     public GameObject VictoryUI;
     public GameObject PlayerUI;
@@ -19,6 +24,7 @@ public class Enemy : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
+        rb.gravityScale = 9.81f;
     }
 
     private void Start()
@@ -26,11 +32,52 @@ public class Enemy : MonoBehaviour
         currentHealth = maxHealth;
     }
 
+    public void LookAtPlayer(Transform player)
+    {
+        if (player == null) return;
+        Vector3 scale = transform.localScale;
+        if (transform.position.x < player.position.x)
+        {
+            scale.x = Mathf.Abs(scale.x);
+            isFlipped = false;
+        }
+        else
+        {
+            scale.x = -Mathf.Abs(scale.x);
+            isFlipped = true;
+        }
+        transform.localScale = scale;
+    }
+
+    public void Attack(Transform player)
+    {
+        if (attackPoint == null || attackPoint.Length == 0) return;
+        foreach (Transform point in attackPoint)
+        {
+            if (point == null) continue;
+            Collider2D[] hitPlayers = Physics2D.OverlapCircleAll(point.position, attackRange, playerLayers);
+            foreach (Collider2D hitPlayer in hitPlayers)
+            {
+                hitPlayer.GetComponent<PlayerCombat>()?.TakeDamage(attackDamage);
+            }
+        }
+    }
+
+    public void DashAttack(Transform player)
+    {
+        if (dashAttackPoint == null) return;
+        Collider2D[] hitPlayers = Physics2D.OverlapCircleAll(dashAttackPoint.position, dashAttackRange, playerLayers);
+        foreach (Collider2D hitPlayer in hitPlayers)
+        {
+            hitPlayer.GetComponent<PlayerCombat>()?.TakeDamage(attackDamage);
+        }
+    }
+
     public void TakeDamage(int damage)
     {
         Debug.Log($"Enemy took {damage} damage. Current health: {currentHealth - damage}");
         currentHealth -= damage;
-        animator.SetTrigger("Hurt");
+        animator.SetTrigger("IsHurt");
         if (currentHealth <= 0)
         {
             Die();
@@ -47,5 +94,24 @@ public class Enemy : MonoBehaviour
         PlayerUI.SetActive(false);
         VictoryUI.SetActive(true);
         this.enabled = false;
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (attackPoint != null)
+        {
+            Gizmos.color = Color.red;
+            foreach (Transform point in attackPoint)
+            {
+                if (point != null)
+                    Gizmos.DrawWireSphere(point.position, attackRange);
+            }
+        }
+
+        if (dashAttackPoint != null)
+        {
+            Gizmos.color = Color.blue;
+            Gizmos.DrawWireSphere(dashAttackPoint.position, dashAttackRange);
+        }
     }
 }

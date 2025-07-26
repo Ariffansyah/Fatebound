@@ -4,46 +4,52 @@ public class PlayerCombat : MonoBehaviour
 {
     private Animator animator;
     private Rigidbody2D rb;
+    private AudioSource audioSource;
+    private PlayerController PlayerController;
+
     [Header("Combat Params")]
     public Transform attackPoint;
     public Transform jumpAttackPoint;
     public float attackRange = 0.5f;
+    public float jumpAttackRange = 1.0f;
     public int attackDamage = 20;
     public int jumpAttackDamage = 30;
     public int jumpAttackForce = 10;
-    public float jumpAttackRange = 1.0f;
     public LayerMask enemyLayers;
+
     [Header("Health and Stamina")]
-    public int maxHealth = 100;
-    public int maxStamina = 100;
-    private int currentStamina;
+    public int maxHealth = 200;
+    public int maxStamina = 80;
     private int currentHealth;
+    private int currentStamina;
     private float regenTimeStamina = 0f;
+
     [Header("Attack Settings")]
     public float attackRate = 2f;
-    private float nextAttackTime = 0f;
     public int maxCombo = 4;
     public int maxComboCrouch = 2;
+    public float comboMaxDelay = 0.7f;
+    public float postComboDelay = 0.35f;
+    private float nextAttackTime = 0f;
     private int currentCombo = 0;
     private float comboTimer = 0f;
-    public float comboMaxDelay = 0.7f;
+    private float postComboTimer = 0f;
+
     [Header("Sound Effects")]
     public AudioClip attackSound;
     public AudioClip hurtSound;
     public AudioClip dieSound;
-    private AudioSource audioSource;
 
+    [Header("UI Elements")]
     public GameObject GameOverUI;
     public GameObject PlayerUI;
 
-    private PlayerController PlayerController;
+    [SerializeField] private PauseMenu pauseMenu;
 
     public int MaxHealth => maxHealth;
     public int CurrentHealth => currentHealth;
     public int MaxStamina => maxStamina;
     public int CurrentStamina => currentStamina;
-
-    [SerializeField] private PauseMenu pauseMenu;
 
     private void Start()
     {
@@ -62,11 +68,13 @@ public class PlayerCombat : MonoBehaviour
     private void Update()
     {
         if (pauseMenu != null && pauseMenu.IsPaused)
-        {
             return;
-        }
 
         comboTimer += Time.deltaTime;
+        if (postComboTimer > 0f)
+            postComboTimer -= Time.deltaTime;
+
+        bool canAttack = Time.time >= nextAttackTime && postComboTimer <= 0f;
 
         if (InputManager.GetInstance().GetAttackPressed())
         {
@@ -74,67 +82,67 @@ public class PlayerCombat : MonoBehaviour
             {
                 if (!PlayerController.IsCrouching)
                 {
-                    if (Time.time >= nextAttackTime)
+                    if (canAttack && currentStamina >= 10)
                     {
-                        if (currentStamina < 5)
-                        {
-                            Debug.Log("Not enough stamina for attack!");
-                            return;
-                        }
-                        currentStamina -= 5;
-
                         if (comboTimer > comboMaxDelay)
                         {
                             currentCombo = 0;
                         }
-
                         currentCombo++;
                         if (currentCombo > maxCombo)
                             currentCombo = 1;
 
                         animator.SetTrigger("Attack" + currentCombo);
+                        currentStamina -= 10;
+
                         nextAttackTime = Time.time + 1f / attackRate;
                         comboTimer = 0f;
+
+                        if (currentCombo >= maxCombo)
+                        {
+                            postComboTimer = postComboDelay;
+                            nextAttackTime = Time.time + postComboDelay;
+                            currentCombo = 0;
+                        }
                     }
                 }
                 else
                 {
-                    if (Time.time >= nextAttackTime)
+                    if (canAttack && currentStamina >= 5)
                     {
-                        if (currentStamina < 2)
-                        {
-                            Debug.Log("Not enough stamina for crouch attack!");
-                            return;
-                        }
-
                         if (comboTimer > comboMaxDelay)
                         {
                             currentCombo = 0;
                         }
-
                         currentCombo++;
                         if (currentCombo > maxComboCrouch)
                             currentCombo = 1;
-                        currentStamina -= 2;
+
+                        animator.SetTrigger("CrouchAttack" + currentCombo);
+                        currentStamina -= 5;
+
                         nextAttackTime = Time.time + 1f / attackRate;
                         comboTimer = 0f;
-                        animator.SetTrigger("CrouchAttack" + currentCombo);
+
+                        if (currentCombo >= maxComboCrouch)
+                        {
+                            postComboTimer = postComboDelay;
+                            nextAttackTime = Time.time + postComboDelay;
+                            currentCombo = 0;
+                        }
                     }
                 }
             }
             else
             {
-                if (Time.time >= nextAttackTime)
+                if (canAttack && currentStamina >= 25)
                 {
-                    if (currentStamina < 20)
-                    {
-                        Debug.Log("Not enough stamina for jump attack!");
-                        return;
-                    }
-                    currentStamina -= 20;
+                    currentStamina -= 25;
                     nextAttackTime = Time.time + 1f / attackRate;
                     comboTimer = 0f;
                     PlayerController.DoJumpAttackFall();
+                    postComboTimer = postComboDelay;
+                    nextAttackTime = Time.time + postComboDelay;
                 }
             }
         }
@@ -142,16 +150,16 @@ public class PlayerCombat : MonoBehaviour
         if (comboTimer > comboMaxDelay && currentCombo != 0)
         {
             currentCombo = 0;
+            postComboTimer = postComboDelay;
+            nextAttackTime = Time.time + postComboDelay;
         }
 
         if (currentStamina < maxStamina)
-        {
             regenTimeStamina += Time.deltaTime;
-        }
 
         if (currentStamina <= maxStamina && regenTimeStamina >= 1f)
         {
-            currentStamina += 5;
+            currentStamina += 3;
             regenTimeStamina = 0f;
             if (currentStamina > maxStamina)
                 currentStamina = maxStamina;
