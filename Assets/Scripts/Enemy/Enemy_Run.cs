@@ -23,6 +23,7 @@ public class Enemy_Run : StateMachineBehaviour
         rb = animator.GetComponent<Rigidbody2D>();
         enemy = animator.GetComponent<Enemy>();
         playerAnimator = player.GetComponent<Animator>();
+        rb.gravityScale = 9.81f;
 
         dashTimer = dashCooldown;
         crouchDashTimer = 0f;

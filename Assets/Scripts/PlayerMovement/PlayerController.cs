@@ -52,6 +52,8 @@ public class PlayerController : MonoBehaviour
     private Vector2 originalColliderOffset;
     private Vector2 crouchColliderSize;
     private Vector2 crouchColliderOffset;
+    private Vector2 rollColliderSize;
+    private Vector2 rollColliderOffset;
     private Vector2 originalAttackPointPos;
     private Vector2 crouchAttackPointPos;
 
@@ -75,6 +77,8 @@ public class PlayerController : MonoBehaviour
         originalColliderOffset = coll.offset;
         crouchColliderSize = new Vector2(coll.size.x, coll.size.y * 0.75f);
         crouchColliderOffset = originalColliderOffset + new Vector2(0, -(coll.size.y - crouchColliderSize.y) * 0.5f);
+        rollColliderSize = new Vector2(coll.size.x, coll.size.y * 0.5f);
+        rollColliderOffset = originalColliderOffset + new Vector2(0, -(coll.size.y - rollColliderSize.y) * 0.5f);
         originalAttackPointPos = attackPoint.localPosition;
         crouchAttackPointPos = new Vector2(attackPoint.localPosition.x, attackPoint.localPosition.y - 0.2f);
 
@@ -86,6 +90,7 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        AnimatorStateInfo animatorStateInfo = animator.GetCurrentAnimatorStateInfo(0);
         if (pauseMenu != null && pauseMenu.IsPaused)
         {
             return;
@@ -96,10 +101,8 @@ public class PlayerController : MonoBehaviour
             isRollingInvulnerable = false;
         }
 
+        isRollingInProgress = animator.GetCurrentAnimatorStateInfo(0).IsName("Roll");
 
-        isRollingInProgress = animator.GetCurrentAnimatorStateInfo(0).IsName("Rolling");
-
-        AnimatorStateInfo animatorStateInfo = animator.GetCurrentAnimatorStateInfo(0);
         if (animatorStateInfo.IsName("Attack1") ||
             animatorStateInfo.IsName("Attack2") ||
             animatorStateInfo.IsName("Attack3") ||
@@ -112,18 +115,16 @@ public class PlayerController : MonoBehaviour
             moveDirection = Vector2.zero;
             isRolling = false;
         }
+
+        if (isRollingInProgress)
+        {
+            coll.size = rollColliderSize;
+            coll.offset = rollColliderOffset;
+        }
         else
         {
-            moveDirection = InputManager.GetInstance().GetMoveDirection();
-
-            if (!isRollingInProgress)
-            {
-                isRolling = InputManager.GetInstance().GetRollPressed();
-            }
-            else
-            {
-                isRolling = false;
-            }
+            coll.size = isCrouching ? crouchColliderSize : originalColliderSize;
+            coll.offset = isCrouching ? crouchColliderOffset : originalColliderOffset;
         }
 
         if (currentRolls < maxRolls)
@@ -142,6 +143,32 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         UpdateIsGrounded();
+
+        AnimatorStateInfo animatorStateInfo = animator.GetCurrentAnimatorStateInfo(0);
+        if (animatorStateInfo.IsName("Attack1") ||
+            animatorStateInfo.IsName("Attack2") ||
+            animatorStateInfo.IsName("Attack3") ||
+            animatorStateInfo.IsName("Attack4") ||
+            animatorStateInfo.IsName("CrouchAttack") ||
+            animatorStateInfo.IsName("CrouchAttack2") ||
+            animatorStateInfo.IsName("Hurt") ||
+            animatorStateInfo.IsName("jumpAttack"))
+        {
+            // Already handled in Update, but good to be safe
+        }
+        else
+        {
+            moveDirection = InputManager.GetInstance().GetMoveDirection();
+
+            if (!isRollingInProgress)
+            {
+                isRolling = InputManager.GetInstance().GetRollPressed();
+            }
+            else
+            {
+                isRolling = false;
+            }
+        }
 
         HandleHorizontalMovement();
 
@@ -170,15 +197,12 @@ public class PlayerController : MonoBehaviour
         Vector3 groundCheckPos = colliderBounds.min + new Vector3(colliderBounds.size.x * 0.5f, colliderRadius * 0.9f, 0);
         Collider2D[] colliders = Physics2D.OverlapCircleAll(groundCheckPos, colliderRadius);
         this.isGrounded = false;
-        if (colliders.Length > 0)
+        foreach (Collider2D collider in colliders)
         {
-            for (int i = 0; i < colliders.Length; i++)
+            if (collider.gameObject.layer == LayerMask.NameToLayer("Ground"))
             {
-                if (colliders[i] != coll)
-                {
-                    this.isGrounded = true;
-                    break;
-                }
+                this.isGrounded = true;
+                break;
             }
         }
     }

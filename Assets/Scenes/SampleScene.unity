@@ -360,7 +360,7 @@ GameObject:
   - component: {fileID: 56305930}
   - component: {fileID: 56305929}
   - component: {fileID: 56305928}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Ground
   m_TagString: Ground
   m_Icon: {fileID: 0}
@@ -7107,7 +7107,7 @@ Transform:
   m_GameObject: {fileID: 984975870}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 4.1462, y: 7.28205, z: 0}
+  m_LocalPosition: {x: 4.1462, y: 11.54, z: 0}
   m_LocalScale: {x: 8, y: 8, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -12025,6 +12025,11 @@ MonoBehaviour:
   maxRolls: 3
   jumpSound: {fileID: 8300000, guid: 7ed26d3ac9296a348a8cedb6eca72cf5, type: 3}
   attackPoint: {fileID: 846892055}
+  parryRange: 2
+  parryInvulnerabilityDuration: 0.5
+  enemyLayers:
+    serializedVersion: 2
+    m_Bits: 256
   jumpAttackGravityScale: 8
   pauseMenu: {fileID: 504633067}
 --- !u!114 &1238068116
@@ -12055,6 +12060,7 @@ MonoBehaviour:
   maxCombo: 4
   maxComboCrouch: 2
   comboMaxDelay: 0.7
+  postComboDelay: 0.35
   attackSound: {fileID: 8300000, guid: 9c769aff2da01a52eb0a4c4cca8358c0, type: 3}
   hurtSound: {fileID: 8300000, guid: 4db9b1dda3be9cfa28214c80a47c212a, type: 3}
   dieSound: {fileID: 8300000, guid: ad186a8b68bfc75978e7a5478786f315, type: 3}
@@ -13917,7 +13923,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 2500
-  attackDamage: 45
+  attackDamage: 1
   attackRate: 1.5
   attackRange: 0.5
   dashAttackRange: 2.5
