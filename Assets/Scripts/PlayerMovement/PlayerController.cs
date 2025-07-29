@@ -16,6 +16,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Sound Effects")]
     public AudioClip jumpSound;
+    public AudioClip rollSound;
 
     [Header("Combat Params")]
     public Transform attackPoint;
@@ -285,6 +286,10 @@ public class PlayerController : MonoBehaviour
         {
             currentRolls--;
             animator.SetTrigger("Rolling");
+            if (rollSound != null)
+            {
+                audioSource.PlayOneShot(rollSound);
+            }
             isRollingInvulnerable = true;
             if (moveDirection.x == 0f)
             {

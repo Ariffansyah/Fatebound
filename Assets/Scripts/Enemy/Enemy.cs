@@ -12,6 +12,9 @@ public class Enemy : MonoBehaviour
     public Transform[] attackPoint;
     public Transform dashAttackPoint;
     public LayerMask playerLayers;
+    public AudioClip attackSound;
+    public AudioClip hurtSound;
+    public AudioClip dashSound;
 
     public GameObject VictoryUI;
     public GameObject PlayerUI;
@@ -19,12 +22,14 @@ public class Enemy : MonoBehaviour
     private int currentHealth;
     private Rigidbody2D rb;
     private Animator animator;
+    private AudioSource audioSource;
 
     private void Awake()
     {
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
         rb.gravityScale = 9.81f;
+        audioSource = GetComponent<AudioSource>();
     }
 
     private void Start()
@@ -52,6 +57,11 @@ public class Enemy : MonoBehaviour
     public void Attack(Transform player)
     {
         if (attackPoint == null || attackPoint.Length == 0) return;
+        if (attackSound != null)
+        {
+            audioSource.PlayOneShot(attackSound);
+        }
+
         foreach (Transform point in attackPoint)
         {
             if (point == null) continue;
@@ -67,6 +77,10 @@ public class Enemy : MonoBehaviour
     {
         if (dashAttackPoint == null) return;
         Collider2D[] hitPlayers = Physics2D.OverlapCircleAll(dashAttackPoint.position, dashAttackRange, playerLayers);
+        if (dashSound != null)
+        {
+            audioSource.PlayOneShot(dashSound);
+        }
         foreach (Collider2D hitPlayer in hitPlayers)
         {
             hitPlayer.GetComponent<PlayerCombat>()?.TakeDamage(attackDamage);
@@ -77,6 +91,10 @@ public class Enemy : MonoBehaviour
     {
         Debug.Log($"Enemy took {damage} damage. Current health: {currentHealth - damage}");
         currentHealth -= damage;
+        if (hurtSound != null)
+        {
+            audioSource.PlayOneShot(hurtSound);
+        }
         animator.SetTrigger("IsHurt");
         if (currentHealth <= 0)
         {
@@ -94,6 +112,11 @@ public class Enemy : MonoBehaviour
         PlayerUI.SetActive(false);
         VictoryUI.SetActive(true);
         this.enabled = false;
+    }
+
+    public void StopTime()
+    {
+        Time.timeScale = 0f;
     }
 
     private void OnDrawGizmosSelected()

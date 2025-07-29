@@ -175,7 +175,7 @@ public class PlayerCombat : MonoBehaviour
         }
         foreach (Collider2D enemy in hitEnemies)
         {
-            enemy.GetComponent<Enemy>()?.TakeDamage(attackDamage);
+            enemy.GetComponent<Enemy>()?.TakeDamage(attackDamage + currentCombo * 3);
         }
     }
 
@@ -189,12 +189,6 @@ public class PlayerCombat : MonoBehaviour
         foreach (Collider2D enemy in hitEnemies)
         {
             enemy.GetComponent<Enemy>()?.TakeDamage(jumpAttackDamage);
-            Rigidbody2D enemyRb = enemy.GetComponent<Rigidbody2D>();
-            if (enemyRb != null)
-            {
-                Vector2 forceDirection = (enemy.transform.position - jumpAttackPoint.position).normalized;
-                enemyRb.AddForce(forceDirection * jumpAttackForce, ForceMode2D.Impulse);
-            }
         }
     }
 
@@ -239,5 +233,10 @@ public class PlayerCombat : MonoBehaviour
         PlayerUI.SetActive(false);
         GameOverUI.SetActive(true);
         this.enabled = false;
+    }
+
+    public void StopTime()
+    {
+        Time.timeScale = 0f;
     }
 }

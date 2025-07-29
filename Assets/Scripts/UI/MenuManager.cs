@@ -54,9 +54,4 @@ public class PauseMenu : MonoBehaviour
     {
         UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex);
     }
-
-    public void QuitGame()
-    {
-        Application.Quit();
-    }
 }
