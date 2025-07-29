@@ -10,16 +10,10 @@
 - **Knight Combat System:**  
   - Up to 4-hit attack combos.
   - Powerful jump attacks.
-  - Dodge/roll mechanic with "Perfect Dodge"—only a perfectly timed roll grants complete invulnerability.
+  - Dodge/roll mechanic.
 - **Stamina & Health:**  
   - Actions consume stamina, which regenerates over time.
   - Health decreases when damaged; game ends at zero health.
-- **Responsive Controls:**  
-  - Smooth movement and animation.
-  - Sound effects for attacks, hurt, and death.
-- **Pause & Game Over Menus:**  
-  - Easily pause, restart, or quit the game.
-
 ---
 
 ## Controls
@@ -40,8 +34,7 @@
 - **Attack:**  
   Press `J` to attack. Chain up to 4-hit combos if timed correctly. Jump attacks can be performed while airborne for extra damage.
 - **Dodge:**  
-  Press `F` to roll. Rolling uses stamina and allows you to evade attacks.  
-  **Perfect Dodge:** Time your roll precisely during dangerous attacks to achieve complete invulnerability. Only a perfect dodge will make you truly invulnerable; regular rolls provide only brief evasion.
+  Press `F` to roll. Rolling uses rolls charge and allows you to evade attacks.  
 - **Movement:**  
   Use `A`/`D` or Left/Right Arrow to move your knight.
 - **Jump:**  
