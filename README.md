@@ -94,6 +94,7 @@ To be filled
 ## Credits
 
 - **Knight Art:** [Szadi Art](https://szadiart.itch.io/)
+- **Cthulu:** [Chierit](https://chierit.itch.io/)
 - **Tileset:** [GandalfHardcore](https://gandalfhardcore.itch.io/)
 - **UI:** [Oinky55](https://oinky55.itch.io/)
 
